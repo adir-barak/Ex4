@@ -11,7 +11,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import static pepse.ConstantsAsher.GROUND_TAG;
+import static pepse.main.ConstantsAsher.GROUND_TAG;
 
 public class Terrain {
     private static final float PERCENT_START_TERRAIN = 2/3f;
