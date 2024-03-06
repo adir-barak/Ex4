@@ -5,7 +5,7 @@ import danogl.components.GameObjectPhysics;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
-import static pepse.ConstantsAsher.BLOCK_TAG;
+import static pepse.main.ConstantsAsher.BLOCK_TAG;
 
 public class Block extends GameObject {
     public static final int SIZE = 30;

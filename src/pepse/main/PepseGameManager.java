@@ -1,22 +1,25 @@
-package pepse;
+package pepse.main;
 import danogl.GameManager;
 import danogl.GameObject;
+import danogl.components.Transition;
 import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
 import danogl.util.Vector2;
+import pepse.Block;
 import pepse.world.Sky;
 import pepse.world.Terrain;
+import pepse.world.daynight.Night;
 
-import static pepse.ConstantsAsher.*;
+import static pepse.main.ConstantsAsher.*;
 
 import java.util.List;
 
 
 public class PepseGameManager extends GameManager {
 
-    public static final int SEED = 0;///TODO need to change form 0?
+    public static final int SEED = 0;//TODO need to change form 0?
 
     /**
      * Initializes the game by setting up game objects, input listeners, and window controller.
@@ -34,16 +37,34 @@ public class PepseGameManager extends GameManager {
 
         gameObjects().addGameObject(Sky.create(windowController.getWindowDimensions()), SKY_LAYER);
 
+        //create terrain
+        createTerrain(windowController);
+        //create night
+        createNight(windowController);
 
-        Terrain terrain = new Terrain(windowController.getWindowDimensions(),SEED);
-        List<Block> list = terrain.createInRange((int)Vector2.ZERO.x(),
-                                                 (int)windowController.getWindowDimensions().x());
-        for (Block block : list) {
-            gameObjects().addGameObject(block, TERRAIN_LAYER);
-        }
+
     }
 
     public static void main(String[] args) {
         new PepseGameManager().run();
     }
+
+    private void createTerrain(WindowController windowController)
+    {
+        Terrain terrain = new Terrain(windowController.getWindowDimensions(),SEED);
+        List<Block> list = terrain.createInRange((int)Vector2.ZERO.x(),
+                (int)windowController.getWindowDimensions().x());
+        for (Block block : list) {
+            gameObjects().addGameObject(block, TERRAIN_LAYER);
+        }
+    }
+
+    private void createNight(WindowController windowController)
+    {
+        GameObject night = Night.create(windowController.getWindowDimensions(), CYCLE_LENGTH);
+        gameObjects().addGameObject(night, NIGHT_LAYER);
+
+
+    }
+
 }
