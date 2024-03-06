@@ -11,6 +11,7 @@ import pepse.Block;
 import pepse.world.Sky;
 import pepse.world.Terrain;
 import pepse.world.daynight.Night;
+import pepse.world.daynight.Sun;
 
 import static pepse.main.ConstantsAsher.*;
 
@@ -41,6 +42,8 @@ public class PepseGameManager extends GameManager {
         createTerrain(windowController);
         //create night
         createNight(windowController);
+        //create sun
+        createSun(windowController);
 
 
     }
@@ -63,8 +66,12 @@ public class PepseGameManager extends GameManager {
     {
         GameObject night = Night.create(windowController.getWindowDimensions(), CYCLE_LENGTH);
         gameObjects().addGameObject(night, NIGHT_LAYER);
+    }
 
-
+    private void createSun(WindowController windowController)
+    {
+        GameObject sun = Sun.create(windowController.getWindowDimensions(), CYCLE_LENGTH);
+        gameObjects().addGameObject(sun, SUN_LAYER);
     }
 
 }

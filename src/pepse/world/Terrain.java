@@ -11,10 +11,9 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import static pepse.main.ConstantsAsher.GROUND_TAG;
+import static pepse.main.ConstantsAsher.*;
 
 public class Terrain {
-    private static final float PERCENT_START_TERRAIN = 2/3f;
     private static final float FACTOR = 7;
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
     private static final int TERRAIN_DEPTH = 20;
@@ -26,7 +25,7 @@ public class Terrain {
 
 
     public Terrain(Vector2 windowDimensions, int seed){
-        this.groundHeightAtX0 = (int)(PERCENT_START_TERRAIN * windowDimensions.y());
+        this.groundHeightAtX0 = (int)(TERRAIN_START_PERCENT * windowDimensions.y());
 //        this.seed = seed;
         this.noiseGenerator = new NoiseGenerator(seed,groundHeightAtX0);
         this.windowDimensions = windowDimensions;
