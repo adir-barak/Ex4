@@ -20,14 +20,14 @@ public class Terrain {
     private static final int TERRAIN_DEPTH = 20;
 
     private int groundHeightAtX0; //its not final cause maybe we add infinity world
-    private final int seed;
+//    private final int seed;
     NoiseGenerator noiseGenerator;
     Vector2 windowDimensions;
 
 
     public Terrain(Vector2 windowDimensions, int seed){
         this.groundHeightAtX0 = (int)(PERCENT_START_TERRAIN * windowDimensions.y());
-        this.seed = seed;
+//        this.seed = seed;
         this.noiseGenerator = new NoiseGenerator(seed,groundHeightAtX0);
         this.windowDimensions = windowDimensions;
     }
@@ -44,8 +44,9 @@ public class Terrain {
         maxX = normalByBlockSize(maxX);
 
         for(int i = minX; i <= maxX; i += Block.SIZE) {
-            for(int j = normalByBlockSize(groundHeightAt(i)); j <= normalByBlockSize(windowDimensions.y()); j += Block.SIZE) {
-                Block block = new Block(new Vector2(i,j),render);
+            float groundHeightAtI = groundHeightAt(i);
+            for(int j = 0; j < TERRAIN_DEPTH; j ++) {
+                Block block = new Block(new Vector2(i,j*Block.SIZE + groundHeightAtI),render);
                 block.setTag(GROUND_TAG);
                 list.add(block);
             }
@@ -55,6 +56,6 @@ public class Terrain {
     }
 
     private int normalByBlockSize(float num){
-        return ((int)num/Block.SIZE)*Block.SIZE;
+        return (int)Math.floor((num) / Block.SIZE) * Block.SIZE;
     }
 }
