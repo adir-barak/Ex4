@@ -12,6 +12,7 @@ import pepse.world.Terrain;
 import pepse.world.daynight.Night;
 import pepse.world.daynight.Sun;
 import pepse.world.daynight.SunHalo;
+import pepse.world.trees.Trunk;
 
 import static pepse.main.ConstantsAsher.*;
 
@@ -42,14 +43,7 @@ public class PepseGameManager extends GameManager {
 
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
 
-        // Add sky object to the game
-        gameObjects().addGameObject(Sky.create(windowController.getWindowDimensions()), SKY_LAYER);
-        //create terrain
-        createTerrain(windowController);
-        //create night
-        createNight(windowController);
-        //create sun
-        createSun(windowController);
+        createMap(windowController.getWindowDimensions());
     }
 
     /**
@@ -61,16 +55,41 @@ public class PepseGameManager extends GameManager {
         new PepseGameManager().run();
     }
 
+
+    private void createMap(Vector2 windowDimensions)
+    {
+        // Add sky object to the game
+        createSky(windowDimensions);
+        //create terrain
+        createTerrain(windowDimensions);
+        //create night
+        createNight(windowDimensions);
+        //create sun
+        createSunWithHalo(windowDimensions);
+        //create Trees
+        createForest();
+    }
+
+    /**
+     * Creates the sky objects and adds them to the game objects.
+     *
+     * @param windowDimensions The window windowDimensions of the game.
+     */
+    private void createSky(Vector2 windowDimensions)
+    {
+        GameObject sky = Sky.create(windowDimensions);
+        gameObjects().addGameObject(sky, SKY_LAYER);
+    }
+
     /**
      * Creates the terrain and adds it to the game objects.
      *
-     * @param windowController The window controller for managing the game window.
+     * @param windowDimensions The window windowDimensions of the game.
      */
-    private void createTerrain(WindowController windowController)
+    private void createTerrain(Vector2 windowDimensions)
     {
-        Terrain terrain = new Terrain(windowController.getWindowDimensions(),SEED);
-        List<Block> list = terrain.createInRange((int)Vector2.ZERO.x(),
-                (int)windowController.getWindowDimensions().x());
+        Terrain terrain = new Terrain(windowDimensions,SEED);
+        List<Block> list = terrain.createInRange(ZERO, (int)windowDimensions.x());
         for (Block block : list) {
             gameObjects().addGameObject(block, TERRAIN_LAYER);
         }
@@ -79,26 +98,37 @@ public class PepseGameManager extends GameManager {
     /**
      * Creates the night object and adds it to the game objects.
      *
-     * @param windowController The window controller for managing the game window.
+     * @param windowDimensions The window windowDimensions of the game.
      */
-    private void createNight(WindowController windowController)
+    private void createNight(Vector2 windowDimensions)
     {
-        GameObject night = Night.create(windowController.getWindowDimensions(), CYCLE_LENGTH);
+        GameObject night = Night.create(windowDimensions, CYCLE_LENGTH);
         gameObjects().addGameObject(night, NIGHT_LAYER);
     }
 
     /**
      * Creates the sun and sun halo objects and adds them to the game objects.
      *
-     * @param windowController The window controller for managing the game window.
+     * @param windowDimensions The window windowDimensions of the game.
      */
-    private void createSun(WindowController windowController)
+    private void createSunWithHalo(Vector2 windowDimensions)
     {
         // Create sun
-        GameObject sun = Sun.create(windowController.getWindowDimensions(), CYCLE_LENGTH);
-        gameObjects().addGameObject(sun, SUN_LAYER);
+        GameObject sun = Sun.create(windowDimensions, CYCLE_LENGTH);
         // Create sunHalo relative to sun
         GameObject sunHalo = SunHalo.create(sun);
+        // Add sunHalo before the sun
         gameObjects().addGameObject(sunHalo, SUN_HALO_LAYER);
+        gameObjects().addGameObject(sun, SUN_LAYER);
     }
+
+    private void createForest() //TODO complete this function
+    {
+        // Create trunk
+        GameObject trunk = Trunk.create(new Vector2(500,350), new Vector2(30,150));
+        gameObjects().addGameObject(trunk, TRUNK_LAYER);
+    }
+
+
+
 }
