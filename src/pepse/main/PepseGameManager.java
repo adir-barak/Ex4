@@ -1,17 +1,25 @@
 package pepse.main;
+
 import danogl.GameManager;
 import danogl.GameObject;
 import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
+import danogl.gui.rendering.ImageRenderable;
+import danogl.gui.rendering.Renderable;
+import danogl.gui.rendering.TextRenderable;
 import danogl.util.Vector2;
 import pepse.Block;
+import pepse.ui.EnergyLevelPercentageUI;
+import pepse.world.Avatar;
 import pepse.world.Sky;
 import pepse.world.Terrain;
 import pepse.world.daynight.Night;
 import pepse.world.daynight.Sun;
 import pepse.world.daynight.SunHalo;
+
+import javax.swing.*;
 
 import static pepse.main.ConstantsAsher.*;
 
@@ -28,6 +36,10 @@ public class PepseGameManager extends GameManager {
     //The duration of the day-night cycle in seconds.
     private static final int CYCLE_LENGTH = 30;
 
+    PepseGameManager() {
+        super("asd", new Vector2(1500, 500));
+    }
+
     /**
      * Initializes the game by setting up game objects, input listeners, and window controller.
      *
@@ -38,7 +50,7 @@ public class PepseGameManager extends GameManager {
      */
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader,
-                               UserInputListener inputListener, WindowController windowController){
+                               UserInputListener inputListener, WindowController windowController) {
 
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
 
@@ -50,6 +62,13 @@ public class PepseGameManager extends GameManager {
         createNight(windowController);
         //create sun
         createSun(windowController);
+
+        // TODO make this a clean method
+        
+        Avatar avatar = new Avatar(windowController.getWindowDimensions().mult(0.5f), inputListener,
+                imageReader);
+        gameObjects().addGameObject(avatar);
+        gameObjects().addGameObject(new EnergyLevelPercentageUI(avatar::getCurrentEnergyLevelPercentage));
     }
 
     /**
@@ -66,11 +85,10 @@ public class PepseGameManager extends GameManager {
      *
      * @param windowController The window controller for managing the game window.
      */
-    private void createTerrain(WindowController windowController)
-    {
-        Terrain terrain = new Terrain(windowController.getWindowDimensions(),SEED);
-        List<Block> list = terrain.createInRange((int)Vector2.ZERO.x(),
-                (int)windowController.getWindowDimensions().x());
+    private void createTerrain(WindowController windowController) {
+        Terrain terrain = new Terrain(windowController.getWindowDimensions(), SEED);
+        List<Block> list = terrain.createInRange((int) Vector2.ZERO.x(),
+                (int) windowController.getWindowDimensions().x());
         for (Block block : list) {
             gameObjects().addGameObject(block, TERRAIN_LAYER);
         }
@@ -81,8 +99,7 @@ public class PepseGameManager extends GameManager {
      *
      * @param windowController The window controller for managing the game window.
      */
-    private void createNight(WindowController windowController)
-    {
+    private void createNight(WindowController windowController) {
         GameObject night = Night.create(windowController.getWindowDimensions(), CYCLE_LENGTH);
         gameObjects().addGameObject(night, NIGHT_LAYER);
     }
@@ -92,8 +109,7 @@ public class PepseGameManager extends GameManager {
      *
      * @param windowController The window controller for managing the game window.
      */
-    private void createSun(WindowController windowController)
-    {
+    private void createSun(WindowController windowController) {
         // Create sun
         GameObject sun = Sun.create(windowController.getWindowDimensions(), CYCLE_LENGTH);
         gameObjects().addGameObject(sun, SUN_LAYER);
