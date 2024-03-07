@@ -60,13 +60,14 @@ public class Terrain {
      */
     public List<Block> createInRange(int minX, int maxX){
         List<Block> list = new ArrayList<>();
-        Renderable render = new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
+        Renderable render;
         minX = normalByBlockSize(minX);
         maxX = normalByBlockSize(maxX);
 
         for(int i = minX; i <= maxX; i += Block.SIZE) {
             float groundHeightAtI = groundHeightAt(i);
             for(int j = 0; j < TERRAIN_DEPTH; j ++) {
+                render = new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));//TODO Optimize the creation of new variables in memory within a loop
                 Block block = new Block(new Vector2(i,j*Block.SIZE + groundHeightAtI),render);
                 block.setTag(GROUND_TAG);
                 list.add(block);
