@@ -7,7 +7,7 @@ import danogl.gui.rendering.Renderable;
 
 import java.awt.*;
 
-import static pepse.main.ConstantsAsher.SUN_HALO_TAG;
+import static pepse.main.ConstantsAsher.*;
 
 public class SunHalo {
     // The color of the sun halo.
@@ -21,7 +21,8 @@ public class SunHalo {
      */
     public static GameObject create(GameObject sun){
         Renderable renderable = new OvalRenderable(COLOR);
-        GameObject sunHalo = new GameObject(sun.getCenter(), sun.getDimensions().mult(2f), renderable);
+        GameObject sunHalo = new GameObject(
+                sun.getCenter(), sun.getDimensions().mult(FACTOR_HALO_SUN), renderable);
         sunHalo.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         sunHalo.setTag(SUN_HALO_TAG);
         sunHalo.addComponent((float deltaTime)-> sunHalo.setCenter(sun.getCenter()));

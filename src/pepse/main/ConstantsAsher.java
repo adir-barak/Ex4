@@ -30,7 +30,13 @@ public class ConstantsAsher {
     /**
      * The layer index for sun halo object.
      */
-    public static final int SUN_HALO_LAYER = Layer.BACKGROUND; //TODO: Change to before the sun.
+    public static final int SUN_HALO_LAYER = Layer.BACKGROUND;
+
+    /**
+     * The layer index for sun object.
+     */
+    public static final int TRUNK_LAYER = Layer.STATIC_OBJECTS;
+
 
     /**
      * The tag for ground objects.
@@ -41,6 +47,11 @@ public class ConstantsAsher {
      * The tag for sky object.
      */
     public static final String SKY_TAG = "sky";
+
+    /**
+     * The tag for trunk of tree object.
+     */
+    public static final String TRUNK_TAG = "trunk";
 
     /**
      * The tag for block objects.
@@ -72,4 +83,19 @@ public class ConstantsAsher {
      * A constant representing half.
      */
     public static final float FACTOR_HALF = 0.5f;
+
+    /**
+     * SunHalo size factor relative to the sun.
+     */
+    public static final float FACTOR_HALO_SUN = 2f;
+
+    /**
+     * The size of the block.
+     */
+    public static final int BLOCK_SIZE = 30;
+
+    /**
+     * Zero number.
+     */
+    public static final int ZERO = 0;
 }
