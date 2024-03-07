@@ -2,21 +2,74 @@ package pepse.main;
 
 import danogl.collisions.Layer;
 
+/**
+ * Constants class contains constants used throughout the Pepse game.
+ */
 public class ConstantsAsher {
 
+    /**
+     * The layer index for sky object.
+     */
     public static final int SKY_LAYER = Layer.BACKGROUND;
+
+    /**
+     * The layer index for terrain objects.
+     */
     public static final int TERRAIN_LAYER = Layer.STATIC_OBJECTS;
+
+    /**
+     * The layer index for night object.
+     */
     public static final int NIGHT_LAYER = Layer.FOREGROUND;
+
+    /**
+     * The layer index for sun object.
+     */
     public static final int SUN_LAYER = Layer.BACKGROUND;
+
+    /**
+     * The layer index for sun halo object.
+     */
+    public static final int SUN_HALO_LAYER = Layer.BACKGROUND; //TODO: Change to before the sun.
+
+    /**
+     * The tag for ground objects.
+     */
     public static final String GROUND_TAG = "ground";
+
+    /**
+     * The tag for sky object.
+     */
+    public static final String SKY_TAG = "sky";
+
+    /**
+     * The tag for block objects.
+     */
     public static final String BLOCK_TAG = "block";
+
+    /**
+     * The tag for night object.
+     */
     public static final String NIGHT_TAG = "night";
+
+    /**
+     * The tag for sun object.
+     */
     public static final String SUN_TAG = "sun";
-    public static final int CYCLE_LENGTH = 30;//
-    public static final Float NOON_OPACITY = 0f;
-    public static final Float MIDNIGHT_OPACITY = 0.5f;
-    public static final float TERRAIN_START_PERCENT = 2/3f;
+
+    /**
+     * The tag for sun halo object.
+     */
+    public static final String SUN_HALO_TAG = "sunHalo";
+
+
+    /**
+     * The percentage of the window height where terrain generation starts.
+     */
+    public static final float TERRAIN_START_PERCENT = 2 / 3f;
+
+    /**
+     * A constant representing half.
+     */
     public static final float FACTOR_HALF = 0.5f;
-
-
 }
