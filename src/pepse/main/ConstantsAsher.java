@@ -73,6 +73,11 @@ public class ConstantsAsher {
      */
     public static final String SUN_HALO_TAG = "sunHalo";
 
+    /**
+     * The tag for cloud object.
+     */
+    public static final String CLOUD_TAG = "cloud";
+
 
     /**
      * The percentage of the window height where terrain generation starts.
@@ -88,6 +93,11 @@ public class ConstantsAsher {
      * SunHalo size factor relative to the sun.
      */
     public static final float FACTOR_HALO_SUN = 2f;
+
+    /**
+     * cloud height factor.
+     */
+    public static final float FACTOR_HEIGHT_FACTOR = 0.1f;
 
     /**
      * The size of the block.

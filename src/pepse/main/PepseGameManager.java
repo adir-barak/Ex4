@@ -11,6 +11,7 @@ import danogl.util.Vector2;
 import pepse.Block;
 import pepse.ui.EnergyLevelPercentageUI;
 import pepse.world.Avatar;
+import pepse.world.Cloud;
 import pepse.world.Sky;
 import pepse.world.Terrain;
 import pepse.world.daynight.Night;
@@ -66,7 +67,10 @@ public class PepseGameManager extends GameManager {
         getAvatarJumpCount = avatar::getJumpCounter;
         changeAvatarEnergyBy = avatar::changeEnergyBy;
 
-        createMap(windowController.getWindowDimensions());
+        createMap(windowController.getWindowDimensions(),imageReader);
+
+
+
 
         // TODO make this a clean method
 
@@ -84,7 +88,7 @@ public class PepseGameManager extends GameManager {
     }
 
 
-    private void createMap(Vector2 windowDimensions) {
+    private void createMap(Vector2 windowDimensions,ImageReader imageReader) {
         // Add sky object to the game
         createSky(windowDimensions);
         //create terrain
@@ -93,6 +97,8 @@ public class PepseGameManager extends GameManager {
         createNight(windowDimensions);
         //create sun
         createSunWithHalo(windowDimensions);
+        //create sun
+        createCloud(windowDimensions,imageReader);
         //create Trees
         flora = new Flora(getGroundHeightAt, getAvatarJumpCount, changeAvatarEnergyBy);
         for (ArrayList<GameObject> treeComponents : flora.createInRange(0,
@@ -149,5 +155,17 @@ public class PepseGameManager extends GameManager {
         // Add sunHalo before the sun
         gameObjects().addGameObject(sunHalo, SUN_HALO_LAYER);
         gameObjects().addGameObject(sun, SUN_LAYER);
+    }
+
+    /**
+     * Creates the sun and sun halo objects and adds them to the game objects.
+     *
+     * @param windowDimensions The window windowDimensions of the game.
+     * @param imageReader     The renderable representing the object.
+     */
+    private void createCloud(Vector2 windowDimensions,ImageReader imageReader) {
+        //Create cloud
+        GameObject cloud = Cloud.create(windowDimensions, CYCLE_LENGTH,imageReader);
+        gameObjects().addGameObject(cloud, SUN_HALO_LAYER);
     }
 }
