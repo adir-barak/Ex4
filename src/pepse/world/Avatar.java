@@ -7,9 +7,9 @@ import danogl.gui.rendering.AnimationRenderable;
 import danogl.util.Vector2;
 
 import java.awt.event.KeyEvent;
-import java.util.HashMap;
 
 public class Avatar extends GameObject {
+
     private static final float VELOCITY_X = 300;
     private static final float VELOCITY_Y = -600;
     private static final float GRAVITY = 800;
@@ -21,21 +21,13 @@ public class Avatar extends GameObject {
     private static final float MAX_ENERGY_LEVEL = 100f;
     private static final float MIN_ENERGY_LEVEL = 0f;
     private float currentEnergyLevel;
-
-    private static final HashMap<String, Integer> stateEnergyDelta = new HashMap<>();
-    private static final String IDLE_STATE = "idle";
-    private static final String MOVING_STATE = "moving";
-    private static final String AIRBORNE_STATE = "airborne";
-    private String currentState = IDLE_STATE;
-    private static final float MOVE_ENERGY_COST = 0.5f;
-    private static final float JUMP_ENERGY_COST = 10f;
+    private static final float MOVE_ENERGY_COST = -0.5f;
+    private static final float JUMP_ENERGY_COST = -10f;
     private static final float IDLE_ENERGY_GAIN = 1f;
     private boolean isAirborne = false;
     private boolean isMoving = false;
 
     private int jumpCounter = 0;
-
-    private boolean facingLeft = false;
 
     private static final String[] IDLE_ANIMATION_FRAMES = new String[]{"./assets/idle_0.png",
             "./assets/idle_1.png", "./assets/idle_2.png", "./assets/idle_3.png"};
@@ -51,8 +43,7 @@ public class Avatar extends GameObject {
 
     // TODO pass pos not in the air and not in the middle, something to consider with trees
     public Avatar(Vector2 pos, UserInputListener inputListener, ImageReader imageReader) {
-//        ImageRenderable imageRenderable = imageReader.readImage("idle_0", true);
-        super(pos, Vector2.ONES.mult(50), null);
+        super(pos, new Vector2(30, 60), null);
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
         transform().setAccelerationY(GRAVITY);
         this.inputListener = inputListener;
@@ -63,20 +54,16 @@ public class Avatar extends GameObject {
                 MOVING_FRAME_RATE);
         airborneAnimation = new AnimationRenderable(AIRBORNE_ANIMATION_FRAMES, imageReader, true,
                 AIRBORNE_FRAME_RATE);
+        setTag("avatar"); // TODO move this constant
     }
 
     public float getCurrentEnergyLevelPercentage() {
         return (currentEnergyLevel / MAX_ENERGY_LEVEL) * 100f;
     }
 
-    public void increaseEnergyBy(float value) {
+    public void changeEnergyBy(float value) {
         currentEnergyLevel = Math.min(MAX_ENERGY_LEVEL, currentEnergyLevel + value);
         currentEnergyLevel = Math.max(MIN_ENERGY_LEVEL, currentEnergyLevel);
-    }
-
-    public void decreaseEnergyBy(float value) {
-        currentEnergyLevel = Math.max(MIN_ENERGY_LEVEL, currentEnergyLevel - value);
-        currentEnergyLevel = Math.min(MAX_ENERGY_LEVEL, currentEnergyLevel);
     }
 
     public int getJumpCounter() {
@@ -100,19 +87,20 @@ public class Avatar extends GameObject {
             if (currentEnergyLevel >= MIN_ENERGY_LEVEL + MOVE_ENERGY_COST) {
                 renderer().setIsFlippedHorizontally(xVel < 0);
                 isMoving = true;
-                decreaseEnergyBy(MOVE_ENERGY_COST);
+                changeEnergyBy(MOVE_ENERGY_COST);
                 transform().setVelocityX(xVel);
             }
         }
         if (inputListener.isKeyPressed(KeyEvent.VK_SPACE) && !isAirborne) {
             if (currentEnergyLevel >= MIN_ENERGY_LEVEL + JUMP_ENERGY_COST) {
+                isAirborne = true;
                 jumpCounter++;
                 transform().setVelocityY(VELOCITY_Y);
-                decreaseEnergyBy(JUMP_ENERGY_COST);
+                changeEnergyBy(JUMP_ENERGY_COST);
             }
         }
         if (!isMoving && !isAirborne) {
-            increaseEnergyBy(IDLE_ENERGY_GAIN);
+            changeEnergyBy(IDLE_ENERGY_GAIN);
         }
         if (isMoving) {
             renderer().setRenderable(movingAnimation);

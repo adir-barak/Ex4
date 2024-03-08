@@ -2,11 +2,18 @@ package pepse.world.trees;
 
 import danogl.GameObject;
 import danogl.components.CoordinateSpace;
+import danogl.components.GameObjectPhysics;
+import danogl.gui.rendering.OvalRenderable;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
+import pepse.util.ColorSupplier;
+
 import static pepse.main.ConstantsAsher.BLOCK_SIZE;
+
 import java.awt.*;
+import java.util.Random;
+import java.util.function.Supplier;
 
 import static pepse.main.ConstantsAsher.*;
 
@@ -14,24 +21,32 @@ import static pepse.main.ConstantsAsher.*;
 /**
  * Trunk class generates and manages the trunk of tree in the game world.
  */
-public class Trunk {
+public class Trunk extends GameObject {
     // The color of the trunk of tree.
-    private static final Color COLOR = new Color(100, 50, 0);
+    private static final Color DEFAULT_TRUNK_COLOR = new Color(100, 50, 20);
 
-    /**
-     * Creates a game object representing the sun.
-     *
-     * @param location The location of the floor on which the wood will be the trunk.
-     * @param dimension The dimension of the trunk.
-     * @return The trunk game object.
-     */
-    public static GameObject create(Vector2 location, Vector2 dimension){
-        Renderable renderable = new RectangleRenderable(COLOR);
-        location = location.add(new Vector2(ZERO,BLOCK_SIZE));
-        GameObject trunk = new GameObject(location, dimension, renderable);
-        trunk.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);//TODO leave it like that??
-        trunk.setTag(TRUNK_TAG);
-        return trunk;
+    // TODO move from here
+    private static final int BLOCK_SIZE = 30;
+    private final Supplier<Integer> getAvatarJumpCount;
+    private int jumpCounter = 0;
+
+    public Trunk(Vector2 topLeftCorner, Vector2 dimensions, Supplier<Integer> getAvatarJumpCount) {
+        super(topLeftCorner, dimensions,
+                new RectangleRenderable(ColorSupplier.approximateColor(DEFAULT_TRUNK_COLOR)));
+        this.getAvatarJumpCount = getAvatarJumpCount;
+        physics().preventIntersectionsFromDirection(Vector2.ZERO);
+        physics().setMass(GameObjectPhysics.IMMOVABLE_MASS);
+        setTag(TRUNK_TAG);
     }
 
+    @Override
+    public void update(float deltaTime) {
+        super.update(deltaTime);
+        int newJumpCount = getAvatarJumpCount.get();
+        if (jumpCounter != newJumpCount) {
+            jumpCounter = newJumpCount;
+            renderer().setRenderable(new RectangleRenderable(
+                    ColorSupplier.approximateColor(DEFAULT_TRUNK_COLOR)));
+        }
+    }
 }
