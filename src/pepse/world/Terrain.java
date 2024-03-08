@@ -47,7 +47,7 @@ public class Terrain {
      * @return The height of the ground at the given x-coordinate.
      */
     public float groundHeightAt(float x){
-        float noise = (float) noiseGenerator.noise(x, Block.SIZE * FACTOR);
+        float noise = (float) noiseGenerator.noise(x, BLOCK_SIZE * FACTOR);
         return groundHeightAtX0 + noise;
     }
 
@@ -60,14 +60,15 @@ public class Terrain {
      */
     public List<Block> createInRange(int minX, int maxX){
         List<Block> list = new ArrayList<>();
-        Renderable render = new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));
+        Renderable render;
         minX = normalByBlockSize(minX);
         maxX = normalByBlockSize(maxX);
 
-        for(int i = minX; i <= maxX; i += Block.SIZE) {
+        for(int i = minX; i <= maxX; i += BLOCK_SIZE) {
             float groundHeightAtI = groundHeightAt(i);
             for(int j = 0; j < TERRAIN_DEPTH; j ++) {
-                Block block = new Block(new Vector2(i,j*Block.SIZE + groundHeightAtI),render);
+                render = new RectangleRenderable(ColorSupplier.approximateColor(BASE_GROUND_COLOR));//TODO Optimize the creation of new variables in memory within a loop
+                Block block = new Block(new Vector2(i,j*BLOCK_SIZE + groundHeightAtI),render);
                 block.setTag(GROUND_TAG);
                 list.add(block);
             }
@@ -82,6 +83,6 @@ public class Terrain {
      * @return The normalized number.
      */
     private int normalByBlockSize(float num){
-        return (int)Math.floor((num) / Block.SIZE) * Block.SIZE;
+        return (int)Math.floor((num) / BLOCK_SIZE) * BLOCK_SIZE;
     }
 }

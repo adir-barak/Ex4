@@ -1,21 +1,30 @@
 package pepse.main;
+
 import danogl.GameManager;
 import danogl.GameObject;
+import danogl.collisions.Layer;
 import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
 import danogl.util.Vector2;
 import pepse.Block;
+import pepse.ui.EnergyLevelPercentageUI;
+import pepse.world.Avatar;
 import pepse.world.Sky;
 import pepse.world.Terrain;
 import pepse.world.daynight.Night;
 import pepse.world.daynight.Sun;
 import pepse.world.daynight.SunHalo;
+import pepse.world.trees.Flora;
 
 import static pepse.main.ConstantsAsher.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * The PepseGameManager class extends GameManager and initializes the Pepse game.
@@ -28,6 +37,16 @@ public class PepseGameManager extends GameManager {
     //The duration of the day-night cycle in seconds.
     private static final int CYCLE_LENGTH = 30;
 
+    private Supplier<Integer> getAvatarJumpCount;
+    private Consumer<Float> changeAvatarEnergyBy;
+    private Function<Float, Float> getGroundHeightAt;
+
+    private Flora flora;
+
+    PepseGameManager() {
+        super("asd", new Vector2(1500, 500));
+    }
+
     /**
      * Initializes the game by setting up game objects, input listeners, and window controller.
      *
@@ -38,18 +57,21 @@ public class PepseGameManager extends GameManager {
      */
     @Override
     public void initializeGame(ImageReader imageReader, SoundReader soundReader,
-                               UserInputListener inputListener, WindowController windowController){
+                               UserInputListener inputListener, WindowController windowController) {
 
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
 
-        // Add sky object to the game
-        gameObjects().addGameObject(Sky.create(windowController.getWindowDimensions()), SKY_LAYER);
-        //create terrain
-        createTerrain(windowController);
-        //create night
-        createNight(windowController);
-        //create sun
-        createSun(windowController);
+        Avatar avatar = new Avatar(windowController.getWindowDimensions().mult(0.5f), inputListener,
+                imageReader);
+        getAvatarJumpCount = avatar::getJumpCounter;
+        changeAvatarEnergyBy = avatar::changeEnergyBy;
+
+        createMap(windowController.getWindowDimensions());
+
+        // TODO make this a clean method
+
+        gameObjects().addGameObject(avatar, Layer.DEFAULT);
+        gameObjects().addGameObject(new EnergyLevelPercentageUI(avatar::getCurrentEnergyLevelPercentage));
     }
 
     /**
@@ -61,16 +83,44 @@ public class PepseGameManager extends GameManager {
         new PepseGameManager().run();
     }
 
+
+    private void createMap(Vector2 windowDimensions) {
+        // Add sky object to the game
+        createSky(windowDimensions);
+        //create terrain
+        createTerrain(windowDimensions);
+        //create night
+        createNight(windowDimensions);
+        //create sun
+        createSunWithHalo(windowDimensions);
+        //create Trees
+        flora = new Flora(getGroundHeightAt, getAvatarJumpCount, changeAvatarEnergyBy);
+        for (ArrayList<GameObject> treeComponents : flora.createInRange(0,
+                (int) windowDimensions.x())) {
+            for (GameObject treeComponent : treeComponents)
+                gameObjects().addGameObject(treeComponent, TRUNK_LAYER);
+        }
+    }
+
+    /**
+     * Creates the sky objects and adds them to the game objects.
+     *
+     * @param windowDimensions The window windowDimensions of the game.
+     */
+    private void createSky(Vector2 windowDimensions) {
+        GameObject sky = Sky.create(windowDimensions);
+        gameObjects().addGameObject(sky, SKY_LAYER);
+    }
+
     /**
      * Creates the terrain and adds it to the game objects.
      *
-     * @param windowController The window controller for managing the game window.
+     * @param windowDimensions The window windowDimensions of the game.
      */
-    private void createTerrain(WindowController windowController)
-    {
-        Terrain terrain = new Terrain(windowController.getWindowDimensions(),SEED);
-        List<Block> list = terrain.createInRange((int)Vector2.ZERO.x(),
-                (int)windowController.getWindowDimensions().x());
+    private void createTerrain(Vector2 windowDimensions) {
+        Terrain terrain = new Terrain(windowDimensions, SEED);
+        getGroundHeightAt = terrain::groundHeightAt;
+        List<Block> list = terrain.createInRange(ZERO, (int) windowDimensions.x());
         for (Block block : list) {
             gameObjects().addGameObject(block, TERRAIN_LAYER);
         }
@@ -79,26 +129,25 @@ public class PepseGameManager extends GameManager {
     /**
      * Creates the night object and adds it to the game objects.
      *
-     * @param windowController The window controller for managing the game window.
+     * @param windowDimensions The window windowDimensions of the game.
      */
-    private void createNight(WindowController windowController)
-    {
-        GameObject night = Night.create(windowController.getWindowDimensions(), CYCLE_LENGTH);
+    private void createNight(Vector2 windowDimensions) {
+        GameObject night = Night.create(windowDimensions, CYCLE_LENGTH);
         gameObjects().addGameObject(night, NIGHT_LAYER);
     }
 
     /**
      * Creates the sun and sun halo objects and adds them to the game objects.
      *
-     * @param windowController The window controller for managing the game window.
+     * @param windowDimensions The window windowDimensions of the game.
      */
-    private void createSun(WindowController windowController)
-    {
+    private void createSunWithHalo(Vector2 windowDimensions) {
         // Create sun
-        GameObject sun = Sun.create(windowController.getWindowDimensions(), CYCLE_LENGTH);
-        gameObjects().addGameObject(sun, SUN_LAYER);
+        GameObject sun = Sun.create(windowDimensions, CYCLE_LENGTH);
         // Create sunHalo relative to sun
         GameObject sunHalo = SunHalo.create(sun);
+        // Add sunHalo before the sun
         gameObjects().addGameObject(sunHalo, SUN_HALO_LAYER);
+        gameObjects().addGameObject(sun, SUN_LAYER);
     }
 }
