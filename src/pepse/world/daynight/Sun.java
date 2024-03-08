@@ -37,10 +37,10 @@ public class Sun {
         sun.setTag(SUN_TAG);
 
         // Add a transition for the sun's movement around the cycle
-        Vector2 CYCLE_CENTER = new Vector2(windowDimension.x()*FACTOR_HALF,
+        Vector2 cycle_center = new Vector2(windowDimension.x()*FACTOR_HALF,
                 windowDimension.y()*TERRAIN_START_PERCENT);
         new Transition<Float>(sun, (Float angle) ->
-                sun.setCenter(initialSunCenter.subtract(CYCLE_CENTER).rotated(angle).add(CYCLE_CENTER)),
+                sun.setCenter(initialSunCenter.subtract(cycle_center).rotated(angle).add(cycle_center)),
                 ARG_START_SUN, ARG_END_SUN, Transition.LINEAR_INTERPOLATOR_FLOAT, cycleLength,
                 Transition.TransitionType.TRANSITION_LOOP, null);
 

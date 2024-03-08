@@ -11,6 +11,7 @@ import danogl.util.Vector2;
 import pepse.Block;
 import pepse.ui.EnergyLevelPercentageUI;
 import pepse.world.Avatar;
+import pepse.world.Cloud;
 import pepse.world.Sky;
 import pepse.world.Terrain;
 import pepse.world.daynight.Night;
@@ -67,6 +68,12 @@ public class PepseGameManager extends GameManager {
         changeAvatarEnergyBy = avatar::changeEnergyBy;
 
         createMap(windowController.getWindowDimensions());
+
+        //TODO change this!!!
+        //Create moon
+        GameObject cloud = Cloud.create(windowController.getWindowDimensions(), CYCLE_LENGTH,imageReader);
+        gameObjects().addGameObject(cloud, SUN_HALO_LAYER);
+
 
         // TODO make this a clean method
 
@@ -149,5 +156,8 @@ public class PepseGameManager extends GameManager {
         // Add sunHalo before the sun
         gameObjects().addGameObject(sunHalo, SUN_HALO_LAYER);
         gameObjects().addGameObject(sun, SUN_LAYER);
+
+
+
     }
 }
