@@ -7,7 +7,7 @@ import danogl.gui.rendering.Renderable;
 
 import java.awt.*;
 
-import static pepse.main.ConstantsAsher.*;
+import static pepse.main.PepseConstants.*;
 
 public class SunHalo {
     // The color of the sun halo.

@@ -11,14 +11,14 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
-import static pepse.main.ConstantsAsher.*;
+import static pepse.main.PepseConstants.*;
 
 /**
  * Terrain class generates and manages the terrain in the game world.
  */
 public class Terrain {
     // The factor for terrain generation.
-    private static final float FACTOR = 7;
+    private static final float NOISE_FACTOR = 7;
     // The base color of the ground.
     private static final Color BASE_GROUND_COLOR = new Color(212, 123, 74);
     // The depth of the terrain
@@ -47,7 +47,7 @@ public class Terrain {
      * @return The height of the ground at the given x-coordinate.
      */
     public float groundHeightAt(float x){
-        float noise = (float) noiseGenerator.noise(x, BLOCK_SIZE * FACTOR);
+        float noise = (float) noiseGenerator.noise(x, BLOCK_SIZE * NOISE_FACTOR);
         return groundHeightAtX0 + noise;
     }
 

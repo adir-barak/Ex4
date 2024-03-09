@@ -5,6 +5,7 @@ import danogl.collisions.Collision;
 import danogl.components.ScheduledTask;
 import danogl.gui.rendering.OvalRenderable;
 import danogl.util.Vector2;
+import pepse.main.PepseConstants;
 import pepse.world.Avatar;
 
 import java.awt.*;
@@ -24,28 +25,22 @@ public class Fruit extends GameObject {
 
     private static final float ENERGY_GAIN = 10f;
 
-    // TODO move this
-    private static final int BLOCK_SIZE = 30;
-    private static final Vector2 DEFAULT_FRUIT_SIZE = Vector2.ONES.mult(BLOCK_SIZE).mult(0.9f);
+    private static final Vector2 DEFAULT_FRUIT_SIZE = Vector2.ONES.mult(PepseConstants.FRUIT_SIZE);
 
     private boolean onCooldown = false;
-    private static final String DEFAULT_TAG = "fruit";
 
-    // TODO move to constants (pull from global)
-    private static final float CYCLE_DURATION = 30f;
-
-    public Fruit(Vector2 topLeftCorner, Supplier<Integer> getAvatarJumpCount,
-                 Consumer<Float> changeAvatarEnergyBy) {
+    public Fruit(Vector2 topLeftCorner, Supplier<Integer> countForEventTrigger,
+                 Consumer<Float> alterValueBy) {
         super(topLeftCorner, DEFAULT_FRUIT_SIZE, new OvalRenderable((FRUIT_COLORS[DEFAULT_COLOR_IND])));
-        this.getAvatarJumpCount = getAvatarJumpCount;
-        this.changeAvatarEnergyBy = changeAvatarEnergyBy;
-        setTag(DEFAULT_TAG); // TODO move to constants
+        this.getAvatarJumpCount = countForEventTrigger;
+        this.changeAvatarEnergyBy = alterValueBy;
+        setTag(PepseConstants.FRUIT_TAG);
     }
 
     private void goOnCooldown() {
         onCooldown = true;
         renderer().setRenderable(null);
-        new ScheduledTask(this, CYCLE_DURATION, false,
+        new ScheduledTask(this, PepseConstants.CYCLE_LENGTH, false,
                 () -> {
                     onCooldown = false;
                     renderer().setRenderable(new OvalRenderable(FRUIT_COLORS[currentColorIndex]));
@@ -60,8 +55,7 @@ public class Fruit extends GameObject {
     @Override
     public void onCollisionEnter(GameObject other, Collision collision) {
         super.onCollisionEnter(other, collision);
-        // TODO move this constant
-        if (other.getTag().equals("avatar")) {
+        if (other.getTag().equals(PepseConstants.AVATAR_TAG)) {
             changeAvatarEnergyBy.accept(ENERGY_GAIN);
             goOnCooldown();
         }

@@ -1,21 +1,15 @@
 package pepse.world.trees;
 
 import danogl.GameObject;
-import danogl.components.CoordinateSpace;
 import danogl.components.GameObjectPhysics;
-import danogl.gui.rendering.OvalRenderable;
 import danogl.gui.rendering.RectangleRenderable;
-import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import pepse.util.ColorSupplier;
 
-import static pepse.main.ConstantsAsher.BLOCK_SIZE;
-
 import java.awt.*;
-import java.util.Random;
 import java.util.function.Supplier;
 
-import static pepse.main.ConstantsAsher.*;
+import static pepse.main.PepseConstants.*;
 
 
 /**
@@ -23,17 +17,16 @@ import static pepse.main.ConstantsAsher.*;
  */
 public class Trunk extends GameObject {
     // The color of the trunk of tree.
-    private static final Color DEFAULT_TRUNK_COLOR = new Color(100, 50, 20);
+    private static final Color DEFAULT_COLOR = new Color(100, 50, 20);
 
-    // TODO move from here
-    private static final int BLOCK_SIZE = 30;
+    private static final Vector2 DEFAULT_SIZE = new Vector2(TRUNK_SIZE_X, TRUNK_SIZE_Y);
     private final Supplier<Integer> getAvatarJumpCount;
     private int jumpCounter = 0;
 
-    public Trunk(Vector2 topLeftCorner, Vector2 dimensions, Supplier<Integer> getAvatarJumpCount) {
-        super(topLeftCorner, dimensions,
-                new RectangleRenderable(ColorSupplier.approximateColor(DEFAULT_TRUNK_COLOR)));
-        this.getAvatarJumpCount = getAvatarJumpCount;
+    public Trunk(Vector2 topLeftCorner, Supplier<Integer> countForEventTrigger) {
+        super(topLeftCorner, DEFAULT_SIZE,
+                new RectangleRenderable(ColorSupplier.approximateColor(DEFAULT_COLOR)));
+        this.getAvatarJumpCount = countForEventTrigger;
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
         physics().setMass(GameObjectPhysics.IMMOVABLE_MASS);
         setTag(TRUNK_TAG);
@@ -46,7 +39,7 @@ public class Trunk extends GameObject {
         if (jumpCounter != newJumpCount) {
             jumpCounter = newJumpCount;
             renderer().setRenderable(new RectangleRenderable(
-                    ColorSupplier.approximateColor(DEFAULT_TRUNK_COLOR)));
+                    ColorSupplier.approximateColor(DEFAULT_COLOR)));
         }
     }
 }

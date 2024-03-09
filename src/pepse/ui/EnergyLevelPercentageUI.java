@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 public class EnergyLevelPercentageUI extends GameObject {
     private static final String DISPLAY_FORMAT = "%d%%";
-    private static final float MAX_RED_VALUE = 255f;
+    private static final int MAX_RED_VALUE = 255;
     private final TextRenderable textRenderable;
     private final Supplier<Float> energyLevelSupplier;
 
@@ -28,8 +28,8 @@ public class EnergyLevelPercentageUI extends GameObject {
     }
 
     private void updateColor(int energyLevel) {
-        int redColorValuePercentage = (int) (MAX_RED_VALUE * (100f - energyLevel) / 100f); // TODO magic?
-        textRenderable.setColor(new Color(redColorValuePercentage, 0, 0));
+        int redColorValueInPercentage = (MAX_RED_VALUE * (100 - energyLevel) / 100); // TODO magic?
+        textRenderable.setColor(new Color(redColorValueInPercentage, 0, 0));
     }
 
     @Override

@@ -7,7 +7,7 @@ import danogl.gui.ImageReader;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 
-import static pepse.main.ConstantsAsher.*;
+import static pepse.main.PepseConstants.*;
 
 /**
  * cloud class generates and manages the cloud in the game world.
@@ -28,14 +28,16 @@ public class Cloud {
     public static GameObject create(Vector2 windowDimension, float cycleLength, ImageReader imageReader) {
 
         Renderable renderable = imageReader.readImage(CLOUD_PATH, true);
-        Vector2 initialCloudCenter = new Vector2(Vector2.ZERO.x(), windowDimension.y()*FACTOR_HEIGHT_FACTOR);
-        GameObject cloud = new GameObject(initialCloudCenter,Vector2.ONES.mult(SIZE), renderable);
+        Vector2 InitialCloudTopLeftPos = new Vector2(0, windowDimension.y() * CLOUD_HEIGHT_FACTOR);
+        GameObject cloud = new GameObject(InitialCloudTopLeftPos, Vector2.ONES.mult(SIZE), renderable);
         cloud.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         cloud.setTag(CLOUD_TAG);
+        float transitionStartX = InitialCloudTopLeftPos.x();
+        float transitionEndX = windowDimension.x() - SIZE;
 
         // Add a transition for the cloud's movement
-        new Transition<Float>(cloud, (Float x) -> cloud.setCenter(new Vector2(x,cloud.getCenter().y())),
-                (float)ZERO, windowDimension.x(), Transition.LINEAR_INTERPOLATOR_FLOAT, cycleLength,
+        new Transition<Float>(cloud, (Float x) -> cloud.setTopLeftCorner(new Vector2(x, cloud.getTopLeftCorner().y())),
+                transitionStartX, transitionEndX, Transition.LINEAR_INTERPOLATOR_FLOAT, cycleLength,
                 Transition.TransitionType.TRANSITION_BACK_AND_FORTH, null);
         return cloud;
     }

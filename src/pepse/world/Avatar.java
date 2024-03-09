@@ -5,6 +5,7 @@ import danogl.gui.ImageReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.rendering.AnimationRenderable;
 import danogl.util.Vector2;
+import pepse.main.PepseConstants;
 
 import java.awt.event.KeyEvent;
 
@@ -16,7 +17,7 @@ public class Avatar extends GameObject {
     private static final double IDLE_FRAME_RATE = 0.2;
     private static final double MOVING_FRAME_RATE = 0.01;
     private static final double AIRBORNE_FRAME_RATE = 0.4;
-    private UserInputListener inputListener;
+    private final UserInputListener inputListener;
 
     private static final float MAX_ENERGY_LEVEL = 100f;
     private static final float MIN_ENERGY_LEVEL = 0f;
@@ -40,10 +41,12 @@ public class Avatar extends GameObject {
     private AnimationRenderable movingAnimation;
     private AnimationRenderable airborneAnimation;
 
+    private static final Vector2 DEFAULT_SIZE = new Vector2(
+            PepseConstants.BLOCK_SIZE, 2 * PepseConstants.BLOCK_SIZE);
 
-    // TODO pass pos not in the air and not in the middle, something to consider with trees
+
     public Avatar(Vector2 pos, UserInputListener inputListener, ImageReader imageReader) {
-        super(pos, new Vector2(30, 60), null);
+        super(pos, new Vector2(DEFAULT_SIZE), null);
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
         transform().setAccelerationY(GRAVITY);
         this.inputListener = inputListener;
@@ -54,7 +57,11 @@ public class Avatar extends GameObject {
                 MOVING_FRAME_RATE);
         airborneAnimation = new AnimationRenderable(AIRBORNE_ANIMATION_FRAMES, imageReader, true,
                 AIRBORNE_FRAME_RATE);
-        setTag("avatar"); // TODO move this constant
+        setTag(PepseConstants.AVATAR_TAG);
+    }
+
+    public void positionOnGroundAtHeight(float xCoordinate, float platformHeight) {
+        setTopLeftCorner(new Vector2(xCoordinate, platformHeight - getDimensions().y()));
     }
 
     public float getCurrentEnergyLevelPercentage() {
@@ -74,31 +81,8 @@ public class Avatar extends GameObject {
     public void update(float deltaTime) {
         super.update(deltaTime);
         renderer().setRenderable(idleAnimation);
-        isMoving = false;
-        transform().setVelocityX(0);
-        isAirborne = getVelocity().y() != 0;
-        float xVel = 0;
-        if (inputListener.isKeyPressed(KeyEvent.VK_LEFT))
-            xVel -= VELOCITY_X;
-        if (inputListener.isKeyPressed(KeyEvent.VK_RIGHT))
-            xVel += VELOCITY_X;
-        if (xVel != 0) {
-            // meaning the avatar tries to move
-            if (currentEnergyLevel >= MIN_ENERGY_LEVEL + MOVE_ENERGY_COST) {
-                renderer().setIsFlippedHorizontally(xVel < 0);
-                isMoving = true;
-                changeEnergyBy(MOVE_ENERGY_COST);
-                transform().setVelocityX(xVel);
-            }
-        }
-        if (inputListener.isKeyPressed(KeyEvent.VK_SPACE) && !isAirborne) {
-            if (currentEnergyLevel >= MIN_ENERGY_LEVEL + JUMP_ENERGY_COST) {
-                isAirborne = true;
-                jumpCounter++;
-                transform().setVelocityY(VELOCITY_Y);
-                changeEnergyBy(JUMP_ENERGY_COST);
-            }
-        }
+        handleRun();
+        handleJump();
         if (!isMoving && !isAirborne) {
             changeEnergyBy(IDLE_ENERGY_GAIN);
         }
@@ -106,6 +90,37 @@ public class Avatar extends GameObject {
             renderer().setRenderable(movingAnimation);
         } else if (isAirborne) {
             renderer().setRenderable(airborneAnimation);
+        }
+    }
+
+    private void handleJump() {
+        isAirborne = getVelocity().y() != 0;
+        if (inputListener.isKeyPressed(KeyEvent.VK_SPACE) && !isAirborne) {
+            if (currentEnergyLevel + JUMP_ENERGY_COST >= MIN_ENERGY_LEVEL) {
+                isAirborne = true;
+                jumpCounter++;
+                transform().setVelocityY(VELOCITY_Y);
+                changeEnergyBy(JUMP_ENERGY_COST);
+            }
+        }
+    }
+
+    private void handleRun() {
+        isMoving = false;
+        transform().setVelocityX(0);
+        float xVel = 0;
+        if (inputListener.isKeyPressed(KeyEvent.VK_LEFT))
+            xVel -= VELOCITY_X;
+        if (inputListener.isKeyPressed(KeyEvent.VK_RIGHT))
+            xVel += VELOCITY_X;
+        if (xVel != 0) {
+            // meaning the avatar tries to move
+            if (currentEnergyLevel + MOVE_ENERGY_COST >= MIN_ENERGY_LEVEL) {
+                renderer().setIsFlippedHorizontally(xVel < 0);
+                isMoving = true;
+                changeEnergyBy(MOVE_ENERGY_COST);
+                transform().setVelocityX(xVel);
+            }
         }
     }
 }

@@ -9,7 +9,7 @@ import danogl.util.Vector2;
 
 import java.awt.*;
 
-import static pepse.main.ConstantsAsher.*;
+import static pepse.main.PepseConstants.*;
 
 /**
  * Sun class generates and manages the sun in the game world.

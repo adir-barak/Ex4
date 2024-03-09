@@ -4,11 +4,13 @@ import danogl.GameObject;
 import danogl.components.ScheduledTask;
 import danogl.components.Transition;
 import danogl.gui.rendering.RectangleRenderable;
+import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
+import pepse.main.PepseConstants;
+import pepse.main.PepseGameManager;
 import pepse.util.ColorSupplier;
 
 import java.awt.*;
-import java.util.Random;
 import java.util.function.Supplier;
 
 public class Leaf extends GameObject {
@@ -19,23 +21,24 @@ public class Leaf extends GameObject {
     private static final float WIND_BLOW_TRANSITION_ANGLE_MULTIPLIER = 2f;
     private static final float WIND_BLOW_TRANSITION_X_SIZE_MULTIPLIER = 0.5f;
     private static final boolean WIND_BLOW_SCHEDULE_REPEAT = false;
-    private static final int BLOCK_SIZE = 30; // TODO move
-    private static final Vector2 DEFAULT_LEAF_SIZE = Vector2.ONES.mult(BLOCK_SIZE);
+    private static final Vector2 DEFAULT_LEAF_SIZE = Vector2.ONES.mult(PepseConstants.LEAF_SIZE);
     private final Supplier<Integer> getAvatarJumpCount;
-
+    private final Renderable initialRenderable;
     private int jumpCounter = 0;
     private float jumpTransitionAngle = 0;
     private static final float JUMP_ANGLE_TRANSITION_DELTA = 90f;
     private static final float JUMP_ANGLE_TRANSITION_DURATION = 1f;
+    private static final int WHACKY_LUCKY_MAX_RGB = 256;
+    private static final double WHACKY_LUCKY_ROLL_NUMBER = 14;
 
-    private static final Random random = new Random(); // TODO move to global
-
-    public Leaf(Vector2 topLeftCorner, Supplier<Integer> getAvatarJumpCount) {
+    public Leaf(Vector2 topLeftCorner, Supplier<Integer> countForEventTrigger) {
         super(topLeftCorner, DEFAULT_LEAF_SIZE,
                 new RectangleRenderable(ColorSupplier.approximateColor(DEFAULT_LEAF_COLOR)));
-        this.getAvatarJumpCount = getAvatarJumpCount;
+        initialRenderable = renderer().getRenderable();
+        this.getAvatarJumpCount = countForEventTrigger;
         GameObject leaf = this;
-        new ScheduledTask(this, random.nextFloat(), WIND_BLOW_SCHEDULE_REPEAT,
+        float delay = PepseGameManager.random.nextFloat();
+        new ScheduledTask(this, delay, WIND_BLOW_SCHEDULE_REPEAT,
                 () -> new Transition<Float>(leaf, this::leafTransitionEffects,
                         WIND_BLOW_TRANSITION_START, WIND_BLOW_TRANSITION_END,
                         Transition.LINEAR_INTERPOLATOR_FLOAT, WIND_BLOW_TRANSITION_DURATION,
@@ -53,6 +56,18 @@ public class Leaf extends GameObject {
         setDimensions(new Vector2(newXSize, DEFAULT_LEAF_SIZE.y()));
     }
 
+    private void rollWhackyLuckyLSDMode() {
+        Renderable renderable = initialRenderable;
+        if (jumpCounter > 1 && jumpCounter % WHACKY_LUCKY_ROLL_NUMBER == 0) {
+            renderable = new RectangleRenderable(new Color(
+                    PepseGameManager.random.nextInt(WHACKY_LUCKY_MAX_RGB),
+                    PepseGameManager.random.nextInt(WHACKY_LUCKY_MAX_RGB),
+                    PepseGameManager.random.nextInt(WHACKY_LUCKY_MAX_RGB)));
+        }
+        renderer().setRenderable(renderable);
+
+    }
+
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
@@ -65,6 +80,7 @@ public class Leaf extends GameObject {
                     Transition.TransitionType.TRANSITION_ONCE, () -> {
                 jumpTransitionAngle += JUMP_ANGLE_TRANSITION_DELTA;
             });
+            rollWhackyLuckyLSDMode();
         }
     }
 }

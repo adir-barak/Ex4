@@ -5,7 +5,7 @@ import danogl.collisions.Layer;
 /**
  * Constants class contains constants used throughout the Pepse game.
  */
-public class ConstantsAsher {
+public class PepseConstants {
 
     /**
      * The layer index for sky object.
@@ -35,7 +35,8 @@ public class ConstantsAsher {
     /**
      * The layer index for sun object.
      */
-    public static final int TRUNK_LAYER = Layer.STATIC_OBJECTS;
+    public static final int TREE_COMPONENTS_LAYER = Layer.STATIC_OBJECTS;
+    public static final int AVATAR_LAYER = Layer.DEFAULT;
 
 
     /**
@@ -77,6 +78,8 @@ public class ConstantsAsher {
      * The tag for cloud object.
      */
     public static final String CLOUD_TAG = "cloud";
+    public static final String AVATAR_TAG = "avatar";
+    public static final String FRUIT_TAG = "fruit";
 
 
     /**
@@ -97,15 +100,15 @@ public class ConstantsAsher {
     /**
      * cloud height factor.
      */
-    public static final float FACTOR_HEIGHT_FACTOR = 0.1f;
+    public static final float CLOUD_HEIGHT_FACTOR = 0.1f;
 
     /**
      * The size of the block.
      */
     public static final int BLOCK_SIZE = 30;
-
-    /**
-     * Zero number.
-     */
-    public static final int ZERO = 0;
+    public static final float CYCLE_LENGTH = 30f;
+    public static final int LEAF_SIZE = BLOCK_SIZE;
+    public static final float FRUIT_SIZE = LEAF_SIZE * 0.9f;
+    public static final int TRUNK_SIZE_X = BLOCK_SIZE;
+    public static final int TRUNK_SIZE_Y = 6 * BLOCK_SIZE;
 }

@@ -10,7 +10,7 @@ import pepse.util.ColorSupplier;
 
 import java.awt.*;
 
-import static pepse.main.ConstantsAsher.*;
+import static pepse.main.PepseConstants.*;
 
 /**
  * Night class creates a game object representing the night.

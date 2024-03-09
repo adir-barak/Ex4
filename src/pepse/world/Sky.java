@@ -7,7 +7,7 @@ import danogl.util.Vector2;
 
 import java.awt.*;
 
-import static pepse.main.ConstantsAsher.SKY_TAG;
+import static pepse.main.PepseConstants.SKY_TAG;
 
 /**
  * Sky class generates and manages the sky in the game world.

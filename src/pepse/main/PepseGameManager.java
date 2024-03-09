@@ -2,7 +2,6 @@ package pepse.main;
 
 import danogl.GameManager;
 import danogl.GameObject;
-import danogl.collisions.Layer;
 import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
@@ -19,10 +18,11 @@ import pepse.world.daynight.Sun;
 import pepse.world.daynight.SunHalo;
 import pepse.world.trees.Flora;
 
-import static pepse.main.ConstantsAsher.*;
+import static pepse.main.PepseConstants.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -33,16 +33,22 @@ import java.util.function.Supplier;
  */
 public class PepseGameManager extends GameManager {
 
+    public static final Random random = new Random();
+
     // Seed for generating terrain
-    private static final int SEED = 0;//TODO need to change form 0?
-    //The duration of the day-night cycle in seconds.
-    private static final int CYCLE_LENGTH = 30;
+    private static final int SEED = 0;
 
     private Supplier<Integer> getAvatarJumpCount;
     private Consumer<Float> changeAvatarEnergyBy;
+    private Supplier<Float> getCurrentEnergyLevelPercentage;
     private Function<Float, Float> getGroundHeightAt;
 
     private Flora flora;
+    private static final Float AVATAR_START_X_POS = 0f;
+    private boolean thereIsATreeOnAvatarStartingPosX = false;
+    private int mapMinX;
+    private int mapMaxX;
+    private Avatar avatar;
 
     PepseGameManager() {
         super("asd", new Vector2(1500, 500));
@@ -61,21 +67,33 @@ public class PepseGameManager extends GameManager {
                                UserInputListener inputListener, WindowController windowController) {
 
         super.initializeGame(imageReader, soundReader, inputListener, windowController);
-
-        Avatar avatar = new Avatar(windowController.getWindowDimensions().mult(0.5f), inputListener,
+        mapMinX = 0;
+        mapMaxX = (int) windowController.getWindowDimensions().x();
+        avatar = new Avatar(Vector2.ZERO, inputListener,
                 imageReader);
         getAvatarJumpCount = avatar::getJumpCounter;
         changeAvatarEnergyBy = avatar::changeEnergyBy;
+        getCurrentEnergyLevelPercentage = avatar::getCurrentEnergyLevelPercentage;
+        Vector2 windowDims = windowController.getWindowDimensions();
+        createMap(windowDims, imageReader);
+        initAvatar(imageReader, inputListener, windowDims);
+        initEnergyUI();
 
-        createMap(windowController.getWindowDimensions(),imageReader);
+    }
 
 
+    private void initAvatar(ImageReader imageReader, UserInputListener inputListener, Vector2 windowDims) {
+        float avatarStartPlatformHeight = getGroundHeightAt.apply(AVATAR_START_X_POS);
+        if (thereIsATreeOnAvatarStartingPosX) {
+            avatarStartPlatformHeight -= TRUNK_SIZE_Y;
+        }
+        avatar.positionOnGroundAtHeight(AVATAR_START_X_POS, avatarStartPlatformHeight);
 
+        gameObjects().addGameObject(avatar, AVATAR_LAYER);
+    }
 
-        // TODO make this a clean method
-
-        gameObjects().addGameObject(avatar, Layer.DEFAULT);
-        gameObjects().addGameObject(new EnergyLevelPercentageUI(avatar::getCurrentEnergyLevelPercentage));
+    private void initEnergyUI() {
+        gameObjects().addGameObject(new EnergyLevelPercentageUI(getCurrentEnergyLevelPercentage));
     }
 
     /**
@@ -88,7 +106,7 @@ public class PepseGameManager extends GameManager {
     }
 
 
-    private void createMap(Vector2 windowDimensions,ImageReader imageReader) {
+    private void createMap(Vector2 windowDimensions, ImageReader imageReader) {
         // Add sky object to the game
         createSky(windowDimensions);
         //create terrain
@@ -98,13 +116,26 @@ public class PepseGameManager extends GameManager {
         //create sun
         createSunWithHalo(windowDimensions);
         //create sun
-        createCloud(windowDimensions,imageReader);
+        createCloud(windowDimensions, imageReader);
         //create Trees
         flora = new Flora(getGroundHeightAt, getAvatarJumpCount, changeAvatarEnergyBy);
-        for (ArrayList<GameObject> treeComponents : flora.createInRange(0,
-                (int) windowDimensions.x())) {
-            for (GameObject treeComponent : treeComponents)
-                gameObjects().addGameObject(treeComponent, TRUNK_LAYER);
+        createForest(windowDimensions);
+
+    }
+
+    private void createForest(Vector2 windowDimensions) {
+        // create a forest in the range of the whole screen
+        for (ArrayList<GameObject> treeComponents : flora.createInRange(mapMinX, mapMaxX)) {
+            for (GameObject treeComponent : treeComponents) {
+                if (treeComponent.getTag().equals(TRUNK_TAG)) {
+                    float treeStartX = treeComponent.getTopLeftCorner().x();
+                    float treeEndX = treeStartX + treeComponent.getDimensions().x();
+                    if (treeStartX <= AVATAR_START_X_POS && AVATAR_START_X_POS < treeEndX) {
+                        thereIsATreeOnAvatarStartingPosX = true;
+                    }
+                }
+                gameObjects().addGameObject(treeComponent, TREE_COMPONENTS_LAYER);
+            }
         }
     }
 
@@ -126,7 +157,7 @@ public class PepseGameManager extends GameManager {
     private void createTerrain(Vector2 windowDimensions) {
         Terrain terrain = new Terrain(windowDimensions, SEED);
         getGroundHeightAt = terrain::groundHeightAt;
-        List<Block> list = terrain.createInRange(ZERO, (int) windowDimensions.x());
+        List<Block> list = terrain.createInRange(mapMinX, mapMaxX);
         for (Block block : list) {
             gameObjects().addGameObject(block, TERRAIN_LAYER);
         }
@@ -161,11 +192,11 @@ public class PepseGameManager extends GameManager {
      * Creates the sun and sun halo objects and adds them to the game objects.
      *
      * @param windowDimensions The window windowDimensions of the game.
-     * @param imageReader     The renderable representing the object.
+     * @param imageReader      The renderable representing the object.
      */
-    private void createCloud(Vector2 windowDimensions,ImageReader imageReader) {
+    private void createCloud(Vector2 windowDimensions, ImageReader imageReader) {
         //Create cloud
-        GameObject cloud = Cloud.create(windowDimensions, CYCLE_LENGTH,imageReader);
+        GameObject cloud = Cloud.create(windowDimensions, CYCLE_LENGTH, imageReader);
         gameObjects().addGameObject(cloud, SUN_HALO_LAYER);
     }
 }
