@@ -1,4 +1,4 @@
-package pepse;
+package pepse.world;
 
 import danogl.GameObject;
 import danogl.components.GameObjectPhysics;
@@ -9,6 +9,8 @@ import static pepse.main.PepseConstants.*;
 
 /**
  * Block class represents a block game object.
+ *
+ * @author adir.barak, asher
  */
 public class Block extends GameObject {
     /**

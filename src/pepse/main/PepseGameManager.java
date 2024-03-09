@@ -7,11 +7,11 @@ import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
 import danogl.util.Vector2;
-import pepse.Block;
+import pepse.world.Block;
 import pepse.ui.EnergyLevelPercentageUI;
 import pepse.world.Avatar;
-import pepse.world.Cloud;
-import pepse.world.Sky;
+import pepse.world.background.Cloud;
+import pepse.world.background.Sky;
 import pepse.world.Terrain;
 import pepse.world.daynight.Night;
 import pepse.world.daynight.Sun;
@@ -30,17 +30,25 @@ import java.util.function.Supplier;
 /**
  * The PepseGameManager class extends GameManager and initializes the Pepse game.
  * It sets up game objects, input listeners, and window controllers.
+ *
+ * @author adir.barak, asher
  */
 public class PepseGameManager extends GameManager {
-
+    /**
+     * A random number generator used throughout the game.
+     */
     public static final Random random = new Random();
 
     // Seed for generating terrain
     private static final int SEED = 0;
 
+    // Supplier for getting the avatar's jump count
     private Supplier<Integer> getAvatarJumpCount;
+    // Consumer for changing the avatar's energy level
     private Consumer<Float> changeAvatarEnergyBy;
+    // Supplier for getting the current energy level percentage
     private Supplier<Float> getCurrentEnergyLevelPercentage;
+    // Function for getting the ground height at a given x-coordinate
     private Function<Float, Float> getGroundHeightAt;
 
     private Flora flora;
@@ -51,7 +59,7 @@ public class PepseGameManager extends GameManager {
     private Avatar avatar;
 
     PepseGameManager() {
-        super("asd", new Vector2(1500, 500));
+        super();
     }
 
     /**
@@ -76,22 +84,25 @@ public class PepseGameManager extends GameManager {
         getCurrentEnergyLevelPercentage = avatar::getCurrentEnergyLevelPercentage;
         Vector2 windowDims = windowController.getWindowDimensions();
         createMap(windowDims, imageReader);
-        initAvatar(imageReader, inputListener, windowDims);
+        initAvatar();
         initEnergyUI();
-
     }
 
-
-    private void initAvatar(ImageReader imageReader, UserInputListener inputListener, Vector2 windowDims) {
+    /**
+     * Initializes the avatar and adds it to the game.
+     */
+    private void initAvatar() {
         float avatarStartPlatformHeight = getGroundHeightAt.apply(AVATAR_START_X_POS);
         if (thereIsATreeOnAvatarStartingPosX) {
             avatarStartPlatformHeight -= TRUNK_SIZE_Y;
         }
         avatar.positionOnGroundAtHeight(AVATAR_START_X_POS, avatarStartPlatformHeight);
-
         gameObjects().addGameObject(avatar, AVATAR_LAYER);
     }
 
+    /**
+     * Initializes the energy level UI and adds it to the game.
+     */
     private void initEnergyUI() {
         gameObjects().addGameObject(new EnergyLevelPercentageUI(getCurrentEnergyLevelPercentage));
     }
@@ -105,7 +116,12 @@ public class PepseGameManager extends GameManager {
         new PepseGameManager().run();
     }
 
-
+    /**
+     * Creates the game map by adding various game objects such as sky, terrain, night, sun, clouds, and trees.
+     *
+     * @param windowDimensions The dimensions of the game window.
+     * @param imageReader      The image reader for loading images.
+     */
     private void createMap(Vector2 windowDimensions, ImageReader imageReader) {
         // Add sky object to the game
         createSky(windowDimensions);
@@ -120,13 +136,18 @@ public class PepseGameManager extends GameManager {
         //create Trees
         flora = new Flora(getGroundHeightAt, getAvatarJumpCount, changeAvatarEnergyBy);
         createForest(windowDimensions);
-
     }
 
+    /**
+     * Creates a forest within the specified range and adds tree components to the game.
+     *
+     * @param windowDimensions The dimensions of the game window.
+     */
     private void createForest(Vector2 windowDimensions) {
         // create a forest in the range of the whole screen
         for (ArrayList<GameObject> treeComponents : flora.createInRange(mapMinX, mapMaxX)) {
             for (GameObject treeComponent : treeComponents) {
+                // Check if the tree component intersects with the avatar's starting position
                 if (treeComponent.getTag().equals(TRUNK_TAG)) {
                     float treeStartX = treeComponent.getTopLeftCorner().x();
                     float treeEndX = treeStartX + treeComponent.getDimensions().x();
@@ -134,6 +155,7 @@ public class PepseGameManager extends GameManager {
                         thereIsATreeOnAvatarStartingPosX = true;
                     }
                 }
+                // Add the tree component to the game objects
                 gameObjects().addGameObject(treeComponent, TREE_COMPONENTS_LAYER);
             }
         }
@@ -197,6 +219,6 @@ public class PepseGameManager extends GameManager {
     private void createCloud(Vector2 windowDimensions, ImageReader imageReader) {
         //Create cloud
         GameObject cloud = Cloud.create(windowDimensions, CYCLE_LENGTH, imageReader);
-        gameObjects().addGameObject(cloud, SUN_HALO_LAYER);
+        gameObjects().addGameObject(cloud, CLOUD_LAYER);
     }
 }

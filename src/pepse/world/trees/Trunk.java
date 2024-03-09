@@ -13,9 +13,12 @@ import static pepse.main.PepseConstants.*;
 
 
 /**
- * Trunk class generates and manages the trunk of tree in the game world.
+ * Represents the trunk of a tree in the game.
+ * The trunk's color might change based on the avatar's jumps (visual effect).
+ *
+ * @author adir.barak, asher
  */
-public class Trunk extends GameObject {
+class Trunk extends GameObject {
     // The color of the trunk of tree.
     private static final Color DEFAULT_COLOR = new Color(100, 50, 20);
 
@@ -23,7 +26,13 @@ public class Trunk extends GameObject {
     private final Supplier<Integer> getAvatarJumpCount;
     private int jumpCounter = 0;
 
-    public Trunk(Vector2 topLeftCorner, Supplier<Integer> countForEventTrigger) {
+    /**
+     * Creates a new Trunk object.
+     *
+     * @param topLeftCorner        the top left corner of the trunk's position
+     * @param countForEventTrigger a function to get the avatar's jump count
+     */
+    Trunk(Vector2 topLeftCorner, Supplier<Integer> countForEventTrigger) {
         super(topLeftCorner, DEFAULT_SIZE,
                 new RectangleRenderable(ColorSupplier.approximateColor(DEFAULT_COLOR)));
         this.getAvatarJumpCount = countForEventTrigger;
@@ -32,6 +41,13 @@ public class Trunk extends GameObject {
         setTag(TRUNK_TAG);
     }
 
+    /**
+     * Updates the trunk's appearance based on the avatar's jump count.
+     * If the avatar's jump count has changed, resets the visual representation of the trunk
+     * using the approximate default color.
+     *
+     * @param deltaTime the time elapsed since the last update (in seconds)
+     */
     @Override
     public void update(float deltaTime) {
         super.update(deltaTime);
