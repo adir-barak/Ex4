@@ -1,4 +1,4 @@
-package pepse.world;
+package pepse.world.background;
 
 import danogl.GameObject;
 import danogl.components.CoordinateSpace;
@@ -11,6 +11,8 @@ import static pepse.main.PepseConstants.SKY_TAG;
 
 /**
  * Sky class generates and manages the sky in the game world.
+ *
+ * @author adir.barak, asher
  */
 public class Sky {
     // The basic color of the sky
@@ -22,8 +24,8 @@ public class Sky {
      * @param windowDimensions The dimensions of the game window.
      * @return The sky game object.
      */
-    public static GameObject create(Vector2 windowDimensions){
-        GameObject sky = new GameObject( Vector2.ZERO, windowDimensions,
+    public static GameObject create(Vector2 windowDimensions) {
+        GameObject sky = new GameObject(Vector2.ZERO, windowDimensions,
                 new RectangleRenderable(BASIC_SKY_COLOR));
         sky.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         sky.setTag(SKY_TAG);

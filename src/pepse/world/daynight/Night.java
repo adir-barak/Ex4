@@ -14,6 +14,8 @@ import static pepse.main.PepseConstants.*;
 
 /**
  * Night class creates a game object representing the night.
+ *
+ * @author adir.barak, asher
  */
 public class Night {
     //The opacity value for objects at noon.
@@ -34,7 +36,7 @@ public class Night {
         night.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         night.setTag(NIGHT_TAG);
         new Transition<Float>(night, night.renderer()::setOpaqueness, NOON_OPACITY, MIDNIGHT_OPACITY,
-                Transition.CUBIC_INTERPOLATOR_FLOAT, cycleLength*FACTOR_HALF,
+                Transition.CUBIC_INTERPOLATOR_FLOAT, cycleLength * FACTOR_HALF,
                 Transition.TransitionType.TRANSITION_BACK_AND_FORTH, null);
         return night;
     }

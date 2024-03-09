@@ -1,4 +1,4 @@
-package pepse.world;
+package pepse.world.background;
 
 import danogl.GameObject;
 import danogl.components.CoordinateSpace;
@@ -11,10 +11,14 @@ import static pepse.main.PepseConstants.*;
 
 /**
  * cloud class generates and manages the cloud in the game world.
+ *
+ * @author adir.barak, asher
  */
 public class Cloud {
     //The size of the cloud
     private static final int SIZE = 80;
+
+    /* credit: https://www.pinterest.com/pin/423690277450019574/ */
     private static final String CLOUD_PATH = "./assets/cloud.png";
 
     /**
@@ -28,7 +32,7 @@ public class Cloud {
     public static GameObject create(Vector2 windowDimension, float cycleLength, ImageReader imageReader) {
 
         Renderable renderable = imageReader.readImage(CLOUD_PATH, true);
-        Vector2 InitialCloudTopLeftPos = new Vector2(0, windowDimension.y() * CLOUD_HEIGHT_FACTOR);
+        Vector2 InitialCloudTopLeftPos = new Vector2(0, windowDimension.y() * CLOUD_Y_OFFSET_FACTOR);
         GameObject cloud = new GameObject(InitialCloudTopLeftPos, Vector2.ONES.mult(SIZE), renderable);
         cloud.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         cloud.setTag(CLOUD_TAG);

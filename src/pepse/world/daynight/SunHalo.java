@@ -9,6 +9,11 @@ import java.awt.*;
 
 import static pepse.main.PepseConstants.*;
 
+/**
+ * Utility class for creating a sun halo game object.
+ *
+ * @author adir.barak, asher
+ */
 public class SunHalo {
     // The color of the sun halo.
     private static final Color COLOR = new Color(255, 255, 0, 20);
@@ -19,13 +24,13 @@ public class SunHalo {
      * @param sun The sun game object.
      * @return The sun halo game object.
      */
-    public static GameObject create(GameObject sun){
+    public static GameObject create(GameObject sun) {
         Renderable renderable = new OvalRenderable(COLOR);
         GameObject sunHalo = new GameObject(
                 sun.getCenter(), sun.getDimensions().mult(FACTOR_HALO_SUN), renderable);
         sunHalo.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         sunHalo.setTag(SUN_HALO_TAG);
-        sunHalo.addComponent((float deltaTime)-> sunHalo.setCenter(sun.getCenter()));
+        sunHalo.addComponent((float deltaTime) -> sunHalo.setCenter(sun.getCenter()));
 
         return sunHalo;
     }

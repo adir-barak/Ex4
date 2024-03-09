@@ -1,0 +1,39 @@
+adir.barak,asher
+207009739,209221365
+
+8.2.4.1 Describe the classes you created in the package
+1. public class Flora: Manages the creation and placement of trees within the game world. Flora generates
+   trees with trunks, leaves, and potentially fruits based on probabilistic placement and the provided ground
+   height function. This is the main (and only public, as of now, class in the 'trees' package).
+
+2. class Trunk extends GameObject: Represents the trunk of a tree in the game. The trunk's color might change
+   based on the avatar's jumps (visual effect).
+
+3. class Leaf extends GameObject: Represents a leaf object in the game. Leaves change appearance based on the
+   avatar's jumps and have a wind blowing animation.
+
+4. class Fruit extends GameObject: Represents a fruit object in the game. Fruits change color with player
+   jumps and grant energy when collected.
+
+8.2.4.2 Explain the relations between these classes
+- The Flora class utilizes the other classes in order to 'construct' tress in the game (which are represented
+  as a collection of GameObjects initialized with the desired properties). There are no inheritances or
+  composition relations between these classes, promoting loose coupling and simplifying potential changes in
+  the future (adhering to the open/closed principle). We program strictly
+  to their independent interfaces, keeping potential moving parts issues to a minimum.
+
+  Of Course, this design choice was made possible thanks to callbacks and the advantages of functional
+  programming.
+
+
+8.2.4.3 Did you use any design pattern?
+No:
+1. The code is clear, concise, and easy to understand without the overhead of a design pattern. We believe
+   introducing a pattern might just add complexity for no real benefit.
+
+2. Design patterns are tools, and like any tool, they can be misused. Using a pattern when it doesn't solve a
+   specific problem or improve the code is itself bad design in our opinion.
+
+3. By not committing to a design pattern prematurely we can swiftly develop our small, limited, and currently
+   laser focused, codebase and leave it open for easy and quick enhancements later on when a real necessity
+   arises.
